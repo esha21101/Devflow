@@ -8,7 +8,8 @@ from app.core.security import (
     verify_password,
 )
 from app.models.user import User
-from app.schemas.user import UserLogin, UserRegister
+from app.schemas.user import UserRegister
+from fastapi.security import OAuth2PasswordRequestForm
 
 
 def register_user(db: Session, user_data: UserRegister) -> User:
@@ -54,12 +55,12 @@ def register_user(db: Session, user_data: UserRegister) -> User:
 
 def login_user(
     db: Session,
-    user_data: UserLogin,
+    form_data: OAuth2PasswordRequestForm,
 ):
 
     user = db.scalar(
-        select(User).where(User.email == user_data.email)
-    )
+      select(User).where(User.email == form_data.username)
+)
 
     if user is None:
         raise HTTPException(
@@ -68,9 +69,9 @@ def login_user(
         )
 
     if not verify_password(
-        user_data.password,
+        form_data.password,
         user.password_hash,
-    ):
+        ):
         raise HTTPException(
             status_code=401,
             detail="Invalid email or password",

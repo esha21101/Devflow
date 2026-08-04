@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta, timezone
 
-from jose import jwt
+from jose import JWTError, jwt
 from passlib.context import CryptContext
+from fastapi.security import OAuth2PasswordBearer
 
 from app.core.config import settings
 
@@ -11,6 +12,9 @@ pwd_context = CryptContext(
 )
 
 ALGORITHM = "HS256"
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="/auth/login",
+)
 
 
 def hash_password(password: str) -> str:
@@ -40,3 +44,20 @@ def create_access_token(
         settings.secret_key,
         algorithm=ALGORITHM,
     )
+    
+    
+def verify_access_token(
+    token: str,
+) -> dict:
+
+    try:
+        payload = jwt.decode(
+            token,
+            settings.secret_key,
+            algorithms=[ALGORITHM],
+        )
+
+        return payload
+
+    except JWTError:
+        raise ValueError("Invalid token")
