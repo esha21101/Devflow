@@ -5,3 +5,4 @@ class Base(DeclarativeBase):
     pass
 
 import app.models.user
+import app.models.project

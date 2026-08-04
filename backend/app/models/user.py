@@ -1,5 +1,6 @@
 from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import relationship
 
 from app.database.base import Base
 from app.models.base import BaseModel
@@ -32,3 +33,9 @@ class User(Base, BaseModel):
         default=True,
         nullable=False,
     )
+    
+    projects = relationship(
+    "Project",
+    back_populates="owner",
+    cascade="all, delete-orphan",
+)
