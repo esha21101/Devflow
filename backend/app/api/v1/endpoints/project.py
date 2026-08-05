@@ -14,6 +14,7 @@ from app.services.project import (
     get_projects,
     get_project,
     update_project,
+    delete_project,
 )
 
 router = APIRouter(
@@ -101,4 +102,32 @@ def update_project_by_id(
         db,
         project,
         project_data,
+    )
+    
+    
+@router.delete(
+    "/{project_id}",
+    status_code=204,
+)
+def delete_project_by_id(
+    project_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+
+    project = get_project(
+        db,
+        project_id,
+        current_user,
+    )
+
+    if project is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Project not found",
+        )
+
+    delete_project(
+        db,
+        project,
     )
