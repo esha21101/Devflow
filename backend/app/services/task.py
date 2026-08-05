@@ -3,6 +3,7 @@ from app.models.project import Project
 from app.models.task import Task
 from app.schemas.task import TaskCreate
 from sqlalchemy import select
+from app.models.user import User
 
 
 def create_task(
@@ -37,3 +38,20 @@ def get_tasks(
     ).all()
 
     return tasks
+
+def get_task(
+    db: Session,
+    task_id,
+    current_user: User,
+) -> Task | None:
+
+    task = db.scalar(
+        select(Task)
+        .join(Project)
+        .where(
+            Task.id == task_id,
+            Project.owner_id == current_user.id,
+        )
+    )
+
+    return task

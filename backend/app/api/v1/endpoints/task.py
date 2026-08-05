@@ -10,10 +10,16 @@ from app.services.project import get_project
 from app.services.task import (
     create_task,
     get_tasks,
+    get_task,
 )
 
 router = APIRouter(
     prefix="/projects",
+    tags=["Tasks"],
+)
+
+task_router = APIRouter(
+    prefix="/tasks",
     tags=["Tasks"],
 )
 
@@ -73,3 +79,27 @@ def list_tasks(
         db,
         project,
     )
+    
+@task_router.get(
+    "/{task_id}",
+    response_model=TaskResponse,
+)
+def get_task_by_id(
+    task_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+
+    task = get_task(
+        db,
+        task_id,
+        current_user,
+    )
+
+    if task is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Task not found",
+        )
+
+    return task
