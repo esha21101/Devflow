@@ -6,6 +6,8 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
 
+from sqlalchemy.orm import relationship
+
 
 class Project(Base):
     __tablename__ = "projects"
@@ -35,3 +37,9 @@ class Project(Base):
         "User",
         back_populates="projects",
     )
+    
+    tasks = relationship(
+    "Task",
+    back_populates="project",
+    cascade="all, delete-orphan",
+)
