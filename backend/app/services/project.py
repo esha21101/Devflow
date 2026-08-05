@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.models.project import Project
 from app.models.user import User
 from app.schemas.project import ProjectCreate
+from sqlalchemy import select
 
 
 def create_project(
@@ -22,5 +23,33 @@ def create_project(
     db.commit()
 
     db.refresh(project)
+
+    return project
+
+def get_projects(
+    db: Session,
+    current_user: User,
+):
+
+    projects = db.scalars(
+        select(Project).where(
+            Project.owner_id == current_user.id
+        )
+    ).all()
+
+    return projects
+
+def get_project(
+    db: Session,
+    project_id: str,
+    current_user: User,
+):
+
+    project = db.scalar(
+        select(Project).where(
+            Project.id == project_id,
+            Project.owner_id == current_user.id,
+        )
+    )
 
     return project
