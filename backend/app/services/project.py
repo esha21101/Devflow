@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.models.project import Project
 from app.models.user import User
-from app.schemas.project import ProjectCreate
+from app.schemas.project import ProjectCreate, ProjectUpdate
 from sqlalchemy import select
 
 
@@ -51,5 +51,23 @@ def get_project(
             Project.owner_id == current_user.id,
         )
     )
+
+    return project
+
+def update_project(
+    db: Session,
+    project: Project,
+    project_data: ProjectUpdate,
+) -> Project:
+
+    if project_data.name is not None:
+        project.name = project_data.name
+
+    if project_data.description is not None:
+        project.description = project_data.description
+
+    db.commit()
+
+    db.refresh(project)
 
     return project
