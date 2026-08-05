@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
-
 from app.models.project import Project
 from app.models.task import Task
 from app.schemas.task import TaskCreate
+from sqlalchemy import select
 
 
 def create_task(
@@ -24,3 +24,16 @@ def create_task(
     db.refresh(task)
 
     return task
+
+def get_tasks(
+    db: Session,
+    project: Project,
+) -> list[Task]:
+
+    tasks = db.scalars(
+        select(Task).where(
+            Task.project_id == project.id
+        )
+    ).all()
+
+    return tasks
