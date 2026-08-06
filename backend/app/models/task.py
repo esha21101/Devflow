@@ -7,7 +7,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
 from app.models.base import BaseModel
-from app.models.enums import TaskStatus
+from app.models.enums import (
+    TaskStatus,
+    TaskPriority,
+)
 
 
 class Task(Base, BaseModel):
@@ -26,6 +29,12 @@ class Task(Base, BaseModel):
     status: Mapped[TaskStatus] = mapped_column(
     Enum(TaskStatus),
     default=TaskStatus.TODO,
+    nullable=False,
+)
+
+    priority: Mapped[TaskPriority] = mapped_column(
+    Enum(TaskPriority),
+    default=TaskPriority.MEDIUM,
     nullable=False,
 )
 
