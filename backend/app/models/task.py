@@ -1,8 +1,13 @@
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import (
+    String,
+    ForeignKey,
+    Enum,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
 from app.models.base import BaseModel
+from app.models.enums import TaskStatus
 
 
 class Task(Base, BaseModel):
@@ -17,6 +22,12 @@ class Task(Base, BaseModel):
         String(1000),
         nullable=True,
     )
+    
+    status: Mapped[TaskStatus] = mapped_column(
+    Enum(TaskStatus),
+    default=TaskStatus.TODO,
+    nullable=False,
+)
 
     project_id: Mapped[str] = mapped_column(
         ForeignKey("projects.id"),

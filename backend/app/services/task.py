@@ -17,10 +17,11 @@ def create_task(
 ) -> Task:
 
     task = Task(
-        title=task_data.title,
-        description=task_data.description,
-        project_id=project.id,
-    )
+    title=task_data.title,
+    description=task_data.description,
+    status=task_data.status,
+    project_id=project.id,
+)
 
     db.add(task)
 
