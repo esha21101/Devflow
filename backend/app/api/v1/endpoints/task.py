@@ -5,12 +5,18 @@ from sqlalchemy.orm import Session
 
 from app.dependencies import get_current_user, get_db
 from app.models.user import User
-from app.schemas.task import TaskCreate, TaskResponse
+from app.schemas.task import (
+    TaskCreate,
+    TaskUpdate,
+    TaskResponse,
+)
 from app.services.project import get_project
 from app.services.task import (
     create_task,
     get_tasks,
     get_task,
+    update_task,
+    delete_task,
 )
 
 router = APIRouter(
@@ -103,3 +109,59 @@ def get_task_by_id(
         )
 
     return task
+
+@task_router.patch(
+    "/{task_id}",
+    response_model=TaskResponse,
+)
+def update_task_by_id(
+    task_id: UUID,
+    task_data: TaskUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+
+    task = get_task(
+        db,
+        task_id,
+        current_user,
+    )
+
+    if task is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Task not found",
+        )
+
+    return update_task(
+        db,
+        task,
+        task_data,
+    )
+    
+@task_router.delete(
+    "/{task_id}",
+    status_code=204,
+)
+def delete_task_by_id(
+    task_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+
+    task = get_task(
+        db,
+        task_id,
+        current_user,
+    )
+
+    if task is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Task not found",
+        )
+
+    delete_task(
+        db,
+        task,
+    )

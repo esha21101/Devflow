@@ -1,7 +1,11 @@
+from uuid import UUID
 from sqlalchemy.orm import Session
 from app.models.project import Project
 from app.models.task import Task
-from app.schemas.task import TaskCreate
+from app.schemas.task import (
+    TaskCreate,
+    TaskUpdate,
+)
 from sqlalchemy import select
 from app.models.user import User
 
@@ -41,7 +45,7 @@ def get_tasks(
 
 def get_task(
     db: Session,
-    task_id,
+    task_id: UUID,
     current_user: User,
 ) -> Task | None:
 
@@ -55,3 +59,35 @@ def get_task(
     )
 
     return task
+
+def update_task(
+    db: Session,
+    task: Task,
+    task_data: TaskUpdate,
+) -> Task:
+
+    update_data = task_data.model_dump(
+        exclude_unset=True
+    )
+
+    for key, value in update_data.items():
+        setattr(
+            task,
+            key,
+            value,
+        )
+
+    db.commit()
+
+    db.refresh(task)
+
+    return task
+
+def delete_task(
+    db: Session,
+    task: Task,
+) -> None:
+
+    db.delete(task)
+
+    db.commit()
