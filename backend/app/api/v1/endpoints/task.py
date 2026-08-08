@@ -1,6 +1,11 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Query,
+)
 from sqlalchemy.orm import Session
 
 from app.dependencies import get_current_user, get_db
@@ -73,14 +78,25 @@ def list_tasks(
     project_id: UUID,
     status: TaskStatus | None = None,
     priority: TaskPriority | None = None,
-    search: str | None = None,
+    search: str | None = Query(
+        default=None,
+        min_length=1,
+        max_length=100,
+    ),
     sort_by: TaskSortBy = TaskSortBy.CREATED_AT,
     sort_order: SortOrder = SortOrder.DESC,
+    page: int = Query(
+        default=1,
+        ge=1,
+    ),
+    page_size: int = Query(
+        default=10,
+        ge=1,
+        le=100,
+    ),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-    page: int = 1,
-    page_size: int = 10,
-    ):
+):
 
     project = get_project(
         db,
