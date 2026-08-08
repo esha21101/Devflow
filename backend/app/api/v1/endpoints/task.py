@@ -5,6 +5,10 @@ from sqlalchemy.orm import Session
 
 from app.dependencies import get_current_user, get_db
 from app.models.user import User
+from app.models.enums import (
+    TaskStatus,
+    TaskPriority,
+)
 from app.schemas.task import (
     TaskCreate,
     TaskUpdate,
@@ -65,9 +69,12 @@ def create_new_task(
 )
 def list_tasks(
     project_id: UUID,
+    status: TaskStatus | None = None,
+    priority: TaskPriority | None = None,
+    search: str | None = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-):
+    ):
 
     project = get_project(
         db,
@@ -84,6 +91,9 @@ def list_tasks(
     return get_tasks(
         db,
         project,
+        status,
+        priority,
+        search,
     )
     
 @task_router.get(

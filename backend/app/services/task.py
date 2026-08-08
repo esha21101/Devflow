@@ -8,6 +8,10 @@ from app.schemas.task import (
 )
 from sqlalchemy import select
 from app.models.user import User
+from app.models.enums import (
+    TaskStatus,
+    TaskPriority,
+)
 
 
 def create_task(
@@ -36,13 +40,34 @@ def create_task(
 def get_tasks(
     db: Session,
     project: Project,
+    status: TaskStatus | None = None,
+    priority: TaskPriority | None = None,
+    search: str | None = None,
 ) -> list[Task]:
 
-    tasks = db.scalars(
-        select(Task).where(
-            Task.project_id == project.id
+    query = select(Task).where(
+        Task.project_id == project.id
+    )
+
+    if status is not None:
+        query = query.where(
+            Task.status == status
         )
-    ).all()
+
+    if priority is not None:
+        query = query.where(
+            Task.priority == priority
+        )
+
+    if search:
+        search_pattern = f"%{search}%"
+
+        query = query.where(
+            Task.title.ilike(search_pattern)
+            | Task.description.ilike(search_pattern)
+        )
+
+    tasks = db.scalars(query).all()
 
     return tasks
 
