@@ -1,3 +1,4 @@
+from asyncio import tasks
 from uuid import UUID
 from sqlalchemy.orm import Session
 from app.models.project import Project
@@ -47,6 +48,8 @@ def get_tasks(
     search: str | None = None,
     sort_by: TaskSortBy = TaskSortBy.CREATED_AT,
     sort_order: SortOrder = SortOrder.DESC,
+    page: int = 1,
+    page_size: int = 10,
 ) -> list[Task]:
 
     query = select(Task).where(
@@ -86,6 +89,10 @@ def get_tasks(
         query = query.order_by(sort_column.asc())
     else:
         query = query.order_by(sort_column.desc())
+
+    offset = (page - 1) * page_size
+
+    query = query.offset(offset).limit(page_size)
 
     tasks = db.scalars(query).all()
 

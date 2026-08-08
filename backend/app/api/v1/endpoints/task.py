@@ -78,6 +78,8 @@ def list_tasks(
     sort_order: SortOrder = SortOrder.DESC,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    page: int = 1,
+    page_size: int = 10,
     ):
 
     project = get_project(
@@ -100,6 +102,8 @@ def list_tasks(
         search,
         sort_by,
         sort_order,
+        page,
+        page_size,
     )
     
 @task_router.get(
