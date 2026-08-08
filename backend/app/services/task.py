@@ -11,6 +11,8 @@ from app.models.user import User
 from app.models.enums import (
     TaskStatus,
     TaskPriority,
+    TaskSortBy,
+    SortOrder,
 )
 
 
@@ -43,6 +45,8 @@ def get_tasks(
     status: TaskStatus | None = None,
     priority: TaskPriority | None = None,
     search: str | None = None,
+    sort_by: TaskSortBy = TaskSortBy.CREATED_AT,
+    sort_order: SortOrder = SortOrder.DESC,
 ) -> list[Task]:
 
     query = select(Task).where(
@@ -66,6 +70,22 @@ def get_tasks(
             Task.title.ilike(search_pattern)
             | Task.description.ilike(search_pattern)
         )
+
+    sort_columns = {
+        TaskSortBy.CREATED_AT: Task.created_at,
+        TaskSortBy.UPDATED_AT: Task.updated_at,
+        TaskSortBy.DUE_DATE: Task.due_date,
+        TaskSortBy.TITLE: Task.title,
+        TaskSortBy.STATUS: Task.status,
+        TaskSortBy.PRIORITY: Task.priority,
+    }
+
+    sort_column = sort_columns[sort_by]
+
+    if sort_order == SortOrder.ASC:
+        query = query.order_by(sort_column.asc())
+    else:
+        query = query.order_by(sort_column.desc())
 
     tasks = db.scalars(query).all()
 

@@ -8,6 +8,8 @@ from app.models.user import User
 from app.models.enums import (
     TaskStatus,
     TaskPriority,
+    TaskSortBy,
+    SortOrder,
 )
 from app.schemas.task import (
     TaskCreate,
@@ -72,6 +74,8 @@ def list_tasks(
     status: TaskStatus | None = None,
     priority: TaskPriority | None = None,
     search: str | None = None,
+    sort_by: TaskSortBy = TaskSortBy.CREATED_AT,
+    sort_order: SortOrder = SortOrder.DESC,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
     ):
@@ -94,6 +98,8 @@ def list_tasks(
         status,
         priority,
         search,
+        sort_by,
+        sort_order,
     )
     
 @task_router.get(

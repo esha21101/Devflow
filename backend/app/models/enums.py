@@ -9,4 +9,18 @@ class TaskStatus(str, Enum):
 class TaskPriority(str, Enum):
     LOW = "low"
     MEDIUM = "medium"
-    HIGH = "high" 
+    HIGH = "high"
+
+
+class TaskSortBy(str, Enum):
+    CREATED_AT = "created_at"
+    UPDATED_AT = "updated_at"
+    DUE_DATE = "due_date"
+    TITLE = "title"
+    STATUS = "status"
+    PRIORITY = "priority"
+
+
+class SortOrder(str, Enum):
+    ASC = "asc"
+    DESC = "desc"
