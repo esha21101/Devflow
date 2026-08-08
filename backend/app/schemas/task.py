@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel
 from uuid import UUID
 from app.models.enums import (
@@ -11,13 +12,14 @@ class TaskCreate(BaseModel):
     description: str | None = None
     status: TaskStatus = TaskStatus.TODO
     priority: TaskPriority = TaskPriority.MEDIUM
-    
+    due_date: datetime | None = None
     
 class TaskUpdate(BaseModel):
     title: str | None = None
     description: str | None = None
     status: TaskStatus | None = None
     priority: TaskPriority | None = None
+    due_date: datetime | None = None
 
 
 class TaskResponse(BaseModel):
@@ -27,6 +29,7 @@ class TaskResponse(BaseModel):
     status: TaskStatus
     priority: TaskPriority
     project_id: UUID
+    due_date: datetime | None
 
     class Config:
         from_attributes = True

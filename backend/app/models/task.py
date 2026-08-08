@@ -1,7 +1,9 @@
+from datetime import datetime
 from sqlalchemy import (
     String,
     ForeignKey,
     Enum,
+    DateTime,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -11,6 +13,7 @@ from app.models.enums import (
     TaskStatus,
     TaskPriority,
 )
+
 
 
 class Task(Base, BaseModel):
@@ -30,13 +33,18 @@ class Task(Base, BaseModel):
     Enum(TaskStatus),
     default=TaskStatus.TODO,
     nullable=False,
-)
+    )
 
     priority: Mapped[TaskPriority] = mapped_column(
     Enum(TaskPriority),
     default=TaskPriority.MEDIUM,
     nullable=False,
-)
+    )
+    
+    due_date: Mapped[datetime | None] = mapped_column(
+    DateTime(timezone=True),
+    nullable=True,
+    )
 
     project_id: Mapped[str] = mapped_column(
         ForeignKey("projects.id"),

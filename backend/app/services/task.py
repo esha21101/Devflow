@@ -21,6 +21,7 @@ def create_task(
     description=task_data.description,
     status=task_data.status,
     priority=task_data.priority,
+    due_date=task_data.due_date,
     project_id=project.id,
 )
 
